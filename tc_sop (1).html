@@ -1,0 +1,222 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.sop{padding:1.5rem 0;max-width:680px}
+.header{margin-bottom:1.5rem}
+.header h1{font-size:22px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.header p{font-size:14px;color:var(--color-text-secondary)}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:0}
+.tab{padding:8px 16px;font-size:14px;font-weight:400;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--color-text-primary);font-weight:500;border-bottom:2px solid var(--color-text-primary)}
+.section{display:none}
+.section.active{display:block}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.doc-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;display:flex;align-items:center;gap:10px;text-decoration:none}
+.doc-card:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.doc-card i{font-size:18px;color:var(--color-text-secondary)}
+.doc-card-text{flex:1;min-width:0}
+.doc-card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-card-sub{font-size:11px;color:var(--color-text-tertiary)}
+.doc-card .ti-external-link{font-size:14px;color:var(--color-text-tertiary)}
+.alert{background:var(--color-background-danger);border:0.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:1.5rem;display:flex;gap:10px;align-items:flex-start}
+.alert i{color:var(--color-text-danger);font-size:18px;margin-top:1px}
+.alert p{font-size:13px;color:var(--color-text-danger);line-height:1.5}
+.step{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:10px;overflow:hidden}
+.step-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;background:var(--color-background-primary)}
+.step-header:hover{background:var(--color-background-secondary)}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0}
+.step-title{flex:1;font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.step-badge{font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);font-weight:400}
+.badge-ab{background:var(--color-background-info);color:var(--color-text-info)}
+.badge-bc{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.step-chevron{font-size:16px;color:var(--color-text-tertiary);transition:transform 0.2s}
+.step-chevron.open{transform:rotate(180deg)}
+.step-body{display:none;padding:0 16px 16px;border-top:0.5px solid var(--color-border-tertiary)}
+.step-body.open{display:block}
+.step-body p{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-top:12px}
+.step-body ul{margin-top:10px;padding-left:0;list-style:none}
+.step-body ul li{font-size:13px;color:var(--color-text-secondary);line-height:1.6;padding:3px 0 3px 20px;position:relative}
+.step-body ul li::before{content:"·";position:absolute;left:6px;color:var(--color-text-tertiary);font-size:16px;line-height:1.4}
+.step-body .note{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:10px}
+.step-body .note p{color:var(--color-text-warning);margin-top:0}
+.step-body .note i{margin-right:4px}
+.step-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-info);text-decoration:none;margin-top:8px;padding:5px 10px;background:var(--color-background-info);border-radius:var(--border-radius-md)}
+.step-link:hover{opacity:0.8}
+.path-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.path-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px}
+.path-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px}
+.path-label.ab{color:var(--color-text-info)}
+.path-label.bc{color:var(--color-text-success)}
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary)}
+.check-item:hover{background:var(--color-background-secondary)}
+.check-item.done{opacity:0.5}
+.check-item.done .check-label{text-decoration:line-through}
+.check-box{width:18px;height:18px;border:0.5px solid var(--color-border-secondary);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.check-item.done .check-box{background:var(--color-background-success);border-color:var(--color-border-success)}
+.check-label{font-size:13px;color:var(--color-text-primary);line-height:1.5}
+.section-divider{font-size:12px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.05em;padding:8px 0 4px;margin-top:4px}
+.progress-bar{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--color-text-success);border-radius:2px;transition:width 0.3s}
+.progress-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px}
+</style>
+
+<div class="sop">
+  <div class="header">
+    <h1>Transaction coordinator — SOP</h1>
+    <p>Wholesaler transaction workflow for seller and buyer sides</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('workflow')">Workflow steps</button>
+    <button class="tab" onclick="showTab('docs')">Documents & links</button>
+    <button class="tab" onclick="showTab('checklist')">Closing checklist</button>
+  </div>
+  <div id="tab-workflow" class="section active">
+    <div class="alert">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      <p><strong>Golden rule:</strong> A-B (seller ↔ CHO) and B-C (CHO ↔ buyer) conversations must NEVER cross. Do not bring a buyer into an A-B thread or a seller into a B-C thread.</p>
+    </div>
+    <div id="steps-ab"></div>
+    <div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:16px 0 10px;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary)">
+      <i class="ti ti-arrow-right" aria-hidden="true" style="font-size:14px;margin-right:4px"></i>Buyer side (B-C)
+    </div>
+    <div id="steps-bc"></div>
+  </div>
+  <div id="tab-docs" class="section">
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">All documents require company Google account access. Assignment contract link will be added once provided.</p>
+    <div class="docs-grid" id="docs-grid"></div>
+  </div>
+  <div id="tab-checklist" class="section">
+    <p class="progress-label" id="progress-label">0 of 19 complete</p>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="checklist" id="checklist"></div>
+  </div>
+</div>
+
+<script>
+const GMAIL="https://docs.google.com/document/d/10c-ROdHnMX5xLmG4_MywgU8Dq6F188-7unJMXa7D1rQ/edit?usp=sharing";
+const GITHUB_REVIEW="https://rickchoproject.github.io/contract-review/";
+const JOTFORM="https://form.jotform.com/250614943982060";
+
+const docs=[
+  {title:"Additional terms",sub:"For all realtor contracts",icon:"ti-file-text",url:"https://docs.google.com/document/d/1FiEBGWP47CRcm7hQLwiKUqLX-oqflxwajokb0XAMKu0/edit?usp=sharing"},
+  {title:"Additional provisions",sub:"Add when needed",icon:"ti-file-plus",url:"https://docs.google.com/document/d/1njhWgUsEPDI3HcVvO04wHwrDzow9L1qF-3_ngeXXL9w/edit?usp=sharing"},
+  {title:"Title companies list",sub:"Approved title companies",icon:"ti-building-bank",url:"https://docs.google.com/document/d/1xF-Jc98sTCwbbdo5btTYCNW_cJIq3RitDupv8HDp1w0/edit?usp=sharing"},
+  {title:"Transaction tracker",sub:"Pipeline & deal tracking",icon:"ti-table",url:"https://docs.google.com/spreadsheets/d/1DRRyMPLyXaOOeHutAD9CBCPOcH_onAoUBzs9LRE_k_s/edit?usp=sharing"},
+  {title:"Cancellation form",sub:"Direct to seller only",icon:"ti-file-x",url:"https://docs.google.com/document/d/1kb8YY_-SE2fgj5MiqJU7eWzBswEtH2v_/edit?usp=sharing"},
+  {title:"Extension addendum",sub:"Direct to seller only",icon:"ti-file-time",url:"https://docs.google.com/document/d/1eR41T_eCh5Xme-Ji3dgv9UhS3LsntajDIWtWDA6ICcI/edit?tab=t.0"},
+  {title:"Wiring instructions",sub:"Title companies folder",icon:"ti-cash",url:"https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link"},
+  {title:"P&L spreadsheet",sub:"Double close cost tracking",icon:"ti-chart-bar",url:"https://docs.google.com/spreadsheets/d/1iym8yKjxIX5dB9Y_aWNapyh4eVzy3JuQMuYlVGAvRLk/edit?usp=sharing"},
+  {title:"Gmail templates",sub:"Open escrow, cancellation, send contract",icon:"ti-mail",url:GMAIL},
+  {title:"Contract review tool",sub:"AI contract scan tool",icon:"ti-brand-github",url:GITHUB_REVIEW},
+  {title:"JotForm",sub:"ACQ contract intake form",icon:"ti-forms",url:JOTFORM},
+  {title:"Assignment template",sub:"Buyer assignment contract",icon:"ti-writing",url:null},
+];
+
+const stepsAB=[
+  {num:1,title:"Receive the contract",badge:"A-B",body:`<p>Two contract types:</p><div class="path-split"><div class="path-card"><div class="path-label ab">Direct to seller</div><ul><li>ACQ manager fills out <a class="step-link" href="${JOTFORM}" target="_blank"><i class="ti ti-external-link"></i>JotForm</a> to generate and send contract via their own DocuSign</li><li>TC receives fully executed copy</li><li>Use Drive version if edits are needed</li></ul></div><div class="path-card"><div class="path-label bc">Realtor contract</div><ul><li>Use state-specific DocuSign template</li><li>Agent sends to seller for signature, then we sign</li><li>Always attach Additional Terms</li></ul></div></div>`},
+  {num:2,title:"Review contract before signing (realtor only)",badge:"Important",badgeType:"warn",body:`<p>Upload to the <a class="step-link" href="${GITHUB_REVIEW}" target="_blank"><i class="ti ti-brand-github"></i>Contract Review tool</a> before anyone signs. It checks:</p><ul><li>Agreed purchase amount</li><li>Commissions and disclosures</li><li>Any abnormal terms</li></ul><div class="note"><p><i class="ti ti-alert-circle"></i>If the tool flags something, ask the ACQ manager if they agreed to it. If not — do NOT sign. Request a revision from the agent first.</p></div>`},
+  {num:3,title:"File in Google Drive",badge:"A-B",body:`<p>Once fully executed:</p><ul><li>Go to <strong>Drive → Transactions → [Current Year]</strong></li><li>Create a new folder named after the property address</li><li>Save the executed contract inside</li><li>Save any brokerage agreement in the same folder</li></ul>`},
+  {num:4,title:"Post to Active Transactions (Google Chat)",badge:"A-B",body:`<p>In the <strong>Active Transactions</strong> space:</p><ul><li>Create a new thread using the property address as the subject</li><li>Upload the executed contract and brokerage agreement</li><li>Tag the ACQ manager on the deal</li><li>Tag dispo team: <strong>Mark</strong> and <strong>Chris</strong></li></ul>`},
+  {num:5,title:"Log to Transaction Tracker",badge:"A-B",body:`<p><a class="step-link" href="https://docs.google.com/spreadsheets/d/1DRRyMPLyXaOOeHutAD9CBCPOcH_onAoUBzs9LRE_k_s/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>Open Transaction Tracker</a></p><ul><li>Add a new line item for the property</li><li>Fill in all available fields</li></ul><p>This feeds the ACQ dashboard and is reviewed in weekly meetings.</p>`},
+  {num:6,title:"Monitor inspection period",badge:"A-B",body:`<p>Track the due diligence end date in the tracker. <strong>One day before it expires</strong>, post in the Active Transactions thread asking the team:</p><ul><li>Are we getting an <strong>extension</strong>?</li><li>Or are we <strong>cancelling</strong>?</li></ul>`},
+  {num:7,title:"Extension or cancellation",badge:"A-B",body:`<div class="path-split"><div class="path-card"><div class="path-label ab">If cancelling</div><ul><li><strong>Direct to seller:</strong> <a class="step-link" href="https://docs.google.com/document/d/1kb8YY_-SE2fgj5MiqJU7eWzBswEtH2v_/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>Cancellation form</a></li><li><strong>Realtor:</strong> state-specific DocuSign cancellation template</li></ul></div><div class="path-card"><div class="path-label bc">If extending</div><ul><li><strong>Direct to seller:</strong> <a class="step-link" href="https://docs.google.com/document/d/1eR41T_eCh5Xme-Ji3dgv9UhS3LsntajDIWtWDA6ICcI/edit?tab=t.0" target="_blank"><i class="ti ti-external-link"></i>Extension addendum</a></li><li><strong>Realtor:</strong> state-specific DocuSign extension template</li></ul></div></div><div class="note"><p><i class="ti ti-coins"></i><strong>If EMD was submitted on a cancellation:</strong> Follow up with escrow until refund is received. Save receipt in Drive. Mark as received in the "Dead" tab of the tracker (EMD on, Refund off). Inform Chris.</p></div>`},
+  {num:8,title:"EMD submitted to title company",badge:"A-B",body:`<p>Once the dispo team has enough buyer traction, they send EMD to the title company. See <a class="step-link" href="https://docs.google.com/document/d/1xF-Jc98sTCwbbdo5btTYCNW_cJIq3RitDupv8HDp1w0/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>Title Companies List</a>. Once Chris confirms:</p><ul><li>Mark EMD as paid in the Transaction Tracker</li><li>Proceed to open escrow</li></ul>`},
+  {num:9,title:"Open escrow (A-B side)",badge:"A-B",body:`<p>Use the <a class="step-link" href="${GMAIL}" target="_blank"><i class="ti ti-mail"></i>Open Escrow A-B Gmail template</a></p><ul><li><strong>To:</strong> Escrow officer</li><li><strong>CC:</strong> Seller (direct to seller) or Agent (realtor) + Chris</li><li><strong>Attach:</strong> Executed purchase agreement + brokerage agreement (if any)</li></ul><p>The brokerage agreement impacts revenue and is needed at closing.</p>`},
+  {num:10,title:"Title search & clearance",badge:"A-B",body:`<p>Follow up with escrow to confirm title search has started. Ask for a timeline — circle back in <strong>2–3 business days</strong>.</p><ul><li><strong>Clear title:</strong> coordinate with escrow for seller signatures</li><li><strong>Issues found</strong> (liens, restrictions, payoffs): loop in the ACQ manager — they communicate with seller/agent to resolve. TC provides info when asked but ACQ leads resolution.</li></ul>`},
+];
+
+const stepsBC=[
+  {num:11,title:"Buyer found — draft assignment or double close",badge:"B-C",body:`<p>Dispo team provides buyer details. Two paths:</p><div class="path-split"><div class="path-card"><div class="path-label ab">Assignment</div><ul><li>Draft assignment contract using the assignment template (link to be added)</li><li>Buyer signs</li></ul></div><div class="path-card"><div class="path-label bc">Double close</div><ul><li>Use state-specific realtor DocuSign template — CHO appears as seller</li><li>No inspection period for buyer</li><li>EMD is non-refundable</li></ul></div></div>`},
+  {num:12,title:"Send contract + wiring instructions to buyer",badge:"B-C",body:`<p>Once buyer signs:</p><ul><li>Send signed contract via DocuSign</li><li>Attach wiring instructions — <a class="step-link" href="https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link" target="_blank"><i class="ti ti-external-link"></i>Wiring Instructions Folder</a></li></ul>`},
+  {num:13,title:"Save B-C docs & update tracker",badge:"B-C",body:`<ul><li>In the property's Drive folder, create a subfolder named <strong>"Dispo"</strong></li><li>Save all B-C documents inside the Dispo subfolder</li><li>Add buyer information to the property's line item in the Transaction Tracker</li></ul>`},
+  {num:14,title:"Open escrow (B-C side)",badge:"B-C",body:`<p>Use the <a class="step-link" href="${GMAIL}" target="_blank"><i class="ti ti-mail"></i>Open Escrow B-C Gmail template</a></p><ul><li><strong>To:</strong> Escrow officer + Buyer (or buyer's agent)</li><li><strong>CC:</strong> Chris</li><li><strong>Attach:</strong> Wiring instructions if buyer has not yet submitted EMD</li></ul><p>Then send a <strong>separate email to escrow only</strong> (remove buyer): ask them to share the EMD receipt as soon as it's received.</p>`},
+  {num:15,title:"Follow up on buyer EMD",badge:"B-C",body:`<ul><li>Follow up with escrow every <strong>3–5 business hours</strong> until received</li><li>Keep dispo specialist posted so they push the buyer</li><li>Once received: save receipt in Dispo folder, mark paid in tracker, inform Chris</li></ul>`},
+  {num:16,title:"Follow up through to closing",badge:"B-C",body:`<p>TC is the central facilitator. Maintain A-B / B-C separation at all times. As closing approaches:</p><ul><li>Confirm with escrow that both sides are coordinated to close</li><li>If there are blockers: involve <strong>ACQ</strong> for seller-side, <strong>Dispo</strong> for buyer-side</li></ul>`},
+  {num:17,title:"Review settlement statement",badge:"Important",badgeType:"warn",body:`<p>Before parties sign, escrow sends the settlement statement. Verify:</p><ul><li>Commissions are correct</li><li>Assignment fee is correct</li></ul><div class="note"><p><i class="ti ti-chart-bar"></i><strong>Double close only:</strong> Enter all costs into the <a class="step-link" href="https://docs.google.com/spreadsheets/d/1iym8yKjxIX5dB9Y_aWNapyh4eVzy3JuQMuYlVGAvRLk/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>P&L spreadsheet</a> to confirm net and catch any unexpected closing costs.</p></div>`},
+  {num:18,title:"Closing day",badge:"B-C",body:`<ul><li>Confirm all parties have signed</li><li>Confirm proceeds are out and the deal is funded</li><li>If title company doesn't have CHO wiring instructions — provide immediately from the <a class="step-link" href="https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link" target="_blank"><i class="ti ti-external-link"></i>Wiring Instructions Folder</a></li><li>Announce to the team in Active Transactions that the deal has closed</li></ul>`},
+];
+
+const checkItems=[
+  {label:"Contract received (direct to seller or realtor)",side:"ab"},
+  {label:"Realtor contract reviewed via Contract Review tool before signing",side:"ab"},
+  {label:"Contract filed in Drive under correct year/property folder",side:"ab"},
+  {label:"Posted to Active Transactions thread — ACQ manager & Mark/Chris tagged",side:"ab"},
+  {label:"Logged to Transaction Tracker",side:"ab"},
+  {label:"Inspection period monitored — team notified 1 day before deadline",side:"ab"},
+  {label:"Extension or cancellation handled with correct form/template",side:"ab"},
+  {label:"Cancelled: EMD refund received, receipt saved, tracker updated, Chris informed",side:"ab"},
+  {label:"EMD confirmed paid — marked on tracker",side:"ab"},
+  {label:"Escrow opened (A-B) using Gmail template — correct parties CC'd",side:"ab"},
+  {label:"Title search initiated and followed up",side:"ab"},
+  {label:"Title cleared — seller signatures coordinated",side:"ab"},
+  {label:"Assignment or double close contract drafted and signed by buyer",side:"bc"},
+  {label:"Wiring instructions sent to buyer",side:"bc"},
+  {label:"B-C docs saved in Dispo subfolder — buyer info added to tracker",side:"bc"},
+  {label:"Escrow opened (B-C) using Gmail template — follow-up sent to escrow only",side:"bc"},
+  {label:"Buyer EMD received — receipt saved, marked on tracker, Chris informed",side:"bc"},
+  {label:"Settlement statement reviewed — numbers confirmed, P&L updated (double close)",side:"bc"},
+  {label:"Closing confirmed — signed, funded, wiring instructions provided, team notified",side:"bc"},
+];
+
+function buildSteps(steps,containerId){
+  const el=document.getElementById(containerId);
+  steps.forEach(s=>{
+    const bt=s.badgeType||(s.badge==='A-B'?'ab':s.badge==='B-C'?'bc':'warn');
+    const bc=bt==='ab'?'badge-ab':bt==='bc'?'badge-bc':'badge-warn';
+    el.innerHTML+=`<div class="step"><div class="step-header" onclick="toggleStep(this)"><div class="step-num">${s.num}</div><div class="step-title">${s.title}</div><span class="step-badge ${bc}">${s.badge}</span><i class="ti ti-chevron-down step-chevron" aria-hidden="true"></i></div><div class="step-body">${s.body}</div></div>`;
+  });
+}
+
+function buildDocs(){
+  const el=document.getElementById('docs-grid');
+  docs.forEach(d=>{
+    if(d.url){
+      el.innerHTML+=`<a class="doc-card" href="${d.url}" target="_blank"><i class="ti ${d.icon}" aria-hidden="true"></i><div class="doc-card-text"><div class="doc-card-title">${d.title}</div><div class="doc-card-sub">${d.sub}</div></div><i class="ti ti-external-link" aria-hidden="true"></i></a>`;
+    } else {
+      el.innerHTML+=`<div class="doc-card" style="opacity:0.5;cursor:default"><i class="ti ${d.icon}" aria-hidden="true"></i><div class="doc-card-text"><div class="doc-card-title">${d.title}</div><div class="doc-card-sub">Link to be added</div></div><i class="ti ti-clock" aria-hidden="true"></i></div>`;
+    }
+  });
+}
+
+function buildChecklist(){
+  const el=document.getElementById('checklist');
+  let lastSide=null;
+  checkItems.forEach((item,i)=>{
+    if(item.side!==lastSide){el.innerHTML+=`<div class="section-divider">${item.side==='ab'?'Seller side (A-B)':'Buyer side (B-C)'}</div>`;lastSide=item.side;}
+    el.innerHTML+=`<div class="check-item" id="check-${i}" onclick="toggleCheck(${i})"><div class="check-box"><i class="ti ti-check" style="font-size:12px;color:var(--color-text-success);display:none" id="checkmark-${i}" aria-hidden="true"></i></div><span class="check-label">${item.label}</span></div>`;
+  });
+  updateProgress();
+}
+
+const checked=new Set();
+function toggleCheck(i){
+  const el=document.getElementById('check-'+i),mark=document.getElementById('checkmark-'+i);
+  if(checked.has(i)){checked.delete(i);el.classList.remove('done');mark.style.display='none';}
+  else{checked.add(i);el.classList.add('done');mark.style.display='block';}
+  updateProgress();
+}
+function updateProgress(){
+  const total=checkItems.length,done=checked.size;
+  document.getElementById('progress-label').textContent=`${done} of ${total} complete`;
+  document.getElementById('progress-fill').style.width=(done/total*100)+'%';
+}
+function toggleStep(header){
+  const body=header.nextElementSibling,chevron=header.querySelector('.step-chevron'),isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);chevron.classList.toggle('open',!isOpen);
+}
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const tabs=['workflow','docs','checklist'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+buildSteps(stepsAB,'steps-ab');
+buildSteps(stepsBC,'steps-bc');
+buildDocs();
+buildChecklist();
+</script>
