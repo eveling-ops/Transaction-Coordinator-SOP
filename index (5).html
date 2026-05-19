@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaction Coordinator SOP — Cactus Home Offer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cho-green-dark: #1e4d3a; --cho-green-mid: #2d7a56; --cho-green-light: #e8f5ee; --cho-green-border: #b6dfc9;
+    --cho-orange: #e8834a; --cho-orange-light: #fef3ec; --cho-orange-border: #f5c9a8;
+    --cho-bg: #f7f5f0; --cho-white: #ffffff; --cho-text: #1a1a1a; --cho-text-mid: #555; --cho-text-muted: #888; --cho-border: #e5e5e0;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #eeece7; min-height: 100vh; padding: 2rem 1rem; }
+  .page { max-width: 740px; margin: 0 auto; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.12); }
+  .cho-header { background: var(--cho-green-dark); padding: 20px 24px 18px; display: flex; align-items: center; gap: 14px; }
+  .cho-logo { width: 42px; height: 42px; background: var(--cho-green-mid); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cho-logo i { color: #fff; font-size: 22px; }
+  .cho-header-text h1 { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+  .cho-header-text p { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .tabs { display: flex; background: var(--cho-green-dark); padding: 0 24px; border-bottom: 3px solid var(--cho-green-mid); }
+  .tab { padding: 10px 14px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: rgba(255,255,255,0.5); border-bottom: 3px solid transparent; margin-bottom: -3px; font-family: inherit; transition: all 0.15s; }
+  .tab.active { color: #fff; border-bottom: 3px solid var(--cho-orange); }
+  .tab:hover:not(.active) { color: rgba(255,255,255,0.85); }
+  .sop-body { background: var(--cho-bg); padding: 20px 24px 32px; }
+  .section { display: none; } .section.active { display: block; }
+  .alert { background: var(--cho-orange-light); border: 1px solid var(--cho-orange-border); border-radius: 10px; padding: 12px 14px; margin-bottom: 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
+  .alert i { color: var(--cho-orange); font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+  .alert p { font-size: 13px; color: #7c3a1a; line-height: 1.55; }
+  .step { border: 1px solid var(--cho-border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; background: var(--cho-white); }
+  .step-header { display: flex; align-items: center; gap: 12px; padding: 13px 16px; cursor: pointer; transition: background 0.1s; user-select: none; }
+  .step-header:hover { background: #fafaf7; }
+  .step-num { width: 27px; height: 27px; border-radius: 50%; background: var(--cho-green-dark); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .step-title { flex: 1; font-size: 14px; font-weight: 500; color: var(--cho-text); }
+  .step-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600; flex-shrink: 0; }
+  .badge-ab { background: var(--cho-green-light); color: var(--cho-green-dark); }
+  .badge-bc { background: #eff6ff; color: #1d4ed8; }
+  .badge-warn { background: var(--cho-orange-light); color: #92400e; }
+  .step-chevron { font-size: 16px; color: #bbb; transition: transform 0.2s; flex-shrink: 0; }
+  .step-chevron.open { transform: rotate(180deg); }
+  .step-body { display: none; padding: 4px 16px 16px; border-top: 1px solid #f0f0ec; }
+  .step-body.open { display: block; }
+  .step-body p { font-size: 13px; color: var(--cho-text-mid); line-height: 1.65; margin-top: 12px; }
+  .step-body ul { margin-top: 10px; padding-left: 0; list-style: none; }
+  .step-body ul li { font-size: 13px; color: var(--cho-text-mid); line-height: 1.65; padding: 3px 0 3px 18px; position: relative; }
+  .step-body ul li::before { content: "·"; position: absolute; left: 5px; color: #bbb; font-size: 18px; line-height: 1.3; }
+  .note { background: var(--cho-orange-light); border: 1px solid var(--cho-orange-border); border-radius: 8px; padding: 10px 13px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .note p { color: #7c3a1a !important; margin-top: 0 !important; font-size: 13px; }
+  .step-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--cho-green-dark); text-decoration: none; padding: 4px 10px; background: var(--cho-green-light); border-radius: 6px; margin-top: 6px; font-weight: 600; border: 1px solid var(--cho-green-border); transition: opacity 0.15s; }
+  .step-link:hover { opacity: 0.75; }
+  .path-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .path-card { border: 1px solid var(--cho-border); border-radius: 8px; padding: 12px; background: #fafaf7; }
+  .path-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .path-label.ab { color: var(--cho-green-dark); } .path-label.bc { color: #1d4ed8; }
+  .side-divider { font-size: 12px; font-weight: 700; color: var(--cho-green-mid); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 10px; padding-top: 14px; border-top: 1px solid var(--cho-border); display: flex; align-items: center; gap: 6px; }
+  .amendment-card { border: 1.5px solid var(--cho-green-border); border-radius: 12px; margin: 12px 0; overflow: hidden; background: var(--cho-green-light); }
+  .amendment-header { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; user-select: none; transition: background 0.1s; }
+  .amendment-header:hover { background: #d8eee3; }
+  .amendment-icon { width: 26px; height: 26px; border-radius: 50%; background: var(--cho-green-mid); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .amendment-icon i { color: #fff; font-size: 13px; }
+  .amendment-title { flex: 1; font-size: 13px; font-weight: 600; color: var(--cho-green-dark); }
+  .amendment-tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--cho-green-mid); color: #fff; font-weight: 600; }
+  .amendment-chevron { font-size: 15px; color: var(--cho-green-mid); transition: transform 0.2s; }
+  .amendment-chevron.open { transform: rotate(180deg); }
+  .amendment-body { display: none; padding: 4px 16px 14px; border-top: 1px solid var(--cho-green-border); }
+  .amendment-body.open { display: block; }
+  .amendment-body p { font-size: 13px; color: var(--cho-green-dark); line-height: 1.6; margin-top: 10px; font-weight: 500; }
+  .amendment-body ul { margin-top: 8px; list-style: none; padding: 0; }
+  .amendment-body ul li { font-size: 13px; color: #2a5a40; line-height: 1.6; padding: 3px 0 3px 18px; position: relative; }
+  .amendment-body ul li::before { content: "·"; position: absolute; left: 5px; color: var(--cho-green-mid); font-size: 18px; line-height: 1.3; }
+  .docs-note { font-size: 13px; color: var(--cho-text-muted); margin-bottom: 1rem; line-height: 1.5; }
+  .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .doc-card { background: var(--cho-white); border: 1px solid var(--cho-border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; transition: border-color 0.15s, background 0.15s; }
+  .doc-card:hover { border-color: var(--cho-green-border); background: var(--cho-green-light); }
+  .doc-icon { font-size: 20px; color: var(--cho-green-mid); flex-shrink: 0; }
+  .doc-card-text { flex: 1; min-width: 0; }
+  .doc-card-title { font-size: 13px; font-weight: 500; color: var(--cho-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .doc-card-sub { font-size: 11px; color: var(--cho-text-muted); margin-top: 1px; }
+  .ext-icon { font-size: 14px; color: #ccc; flex-shrink: 0; }
+  .qr-section-title { font-size: 11px; font-weight: 700; color: var(--cho-green-mid); text-transform: uppercase; letter-spacing: 0.07em; padding: 6px 0 4px; margin-top: 14px; }
+  .qr-card { background: var(--cho-white); border: 1px solid var(--cho-border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .qr-card-title { font-size: 13px; font-weight: 600; color: var(--cho-green-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+  .qr-card-title i { font-size: 16px; color: var(--cho-green-mid); }
+  .qr-card p { font-size: 13px; color: var(--cho-text-mid); line-height: 1.6; }
+  .qr-card ul { list-style: none; padding: 0; margin-top: 6px; }
+  .qr-card ul li { font-size: 13px; color: var(--cho-text-mid); line-height: 1.6; padding: 2px 0 2px 16px; position: relative; }
+  .qr-card ul li::before { content: "·"; position: absolute; left: 4px; color: #bbb; font-size: 18px; line-height: 1.3; }
+  .qr-danger { background: #fff5f5; border-color: #fecaca; }
+  .qr-danger .qr-card-title { color: #991b1b; } .qr-danger .qr-card-title i { color: #dc2626; }
+  .qr-danger p, .qr-danger ul li { color: #7f1d1d; }
+  .qr-warning { background: var(--cho-orange-light); border-color: var(--cho-orange-border); }
+  .qr-warning .qr-card-title { color: #7c3a1a; } .qr-warning .qr-card-title i { color: var(--cho-orange); }
+  .qr-warning p, .qr-warning ul li { color: #7c3a1a; }
+  .tz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+  .tz-chip { background: #fff3e8; border: 1px solid var(--cho-orange-border); border-radius: 7px; padding: 6px 10px; font-size: 12px; color: #7c3a1a; }
+  .tz-chip strong { display: block; font-size: 12px; font-weight: 700; }
+  @media (max-width: 540px) { .sop-body { padding: 16px 16px 24px; } .cho-header { padding: 16px; } .tabs { padding: 0 16px; } .docs-grid, .path-split, .tz-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cho-header">
+    <div class="cho-logo"><i class="ti ti-home-2"></i></div>
+    <div class="cho-header-text">
+      <h1>Transaction Coordinator — SOP</h1>
+      <p>Cactus Home Offer · Wholesaler transaction workflow</p>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('workflow')">Workflow steps</button>
+    <button class="tab" onclick="showTab('docs')">Documents & links</button>
+    <button class="tab" onclick="showTab('qr')">Quick reference</button>
+  </div>
+  <div class="sop-body">
+
+    <div id="tab-workflow" class="section active">
+      <div class="alert">
+        <i class="ti ti-alert-triangle"></i>
+        <p><strong>Golden rule:</strong> A-B (seller ↔ CHO) and B-C (CHO ↔ buyer) conversations must NEVER cross. Do not bring a buyer into an A-B thread or a seller into a B-C thread — ever.</p>
+      </div>
+      <div id="steps-ab"></div>
+      <div class="amendment-card">
+        <div class="amendment-header" onclick="toggleAmendment(this)">
+          <div class="amendment-icon"><i class="ti ti-pencil"></i></div>
+          <div class="amendment-title">Contract Amendments (A-B)</div>
+          <span class="amendment-tag">Reference</span>
+          <i class="ti ti-chevron-down amendment-chevron"></i>
+        </div>
+        <div class="amendment-body">
+          <p>Use when EMD, closing date, due diligence period, or provisions need to change on the seller side:</p>
+          <ul>
+            <li><strong>Direct to Seller:</strong> Use the Addendum to RPA — already loaded as a signed template on DocuSign. Seller signature only needed.</li>
+            <li><strong>Realtor contract:</strong> Use the state-specific amendment template on DocuSign that matches the original contract.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="side-divider"><i class="ti ti-arrow-right" style="font-size:14px"></i> Buyer side (B-C)</div>
+      <div id="steps-bc"></div>
+      <div class="amendment-card">
+        <div class="amendment-header" onclick="toggleAmendment(this)">
+          <div class="amendment-icon"><i class="ti ti-pencil"></i></div>
+          <div class="amendment-title">Contract Amendments (B-C)</div>
+          <span class="amendment-tag">Reference</span>
+          <i class="ti ti-chevron-down amendment-chevron"></i>
+        </div>
+        <div class="amendment-body">
+          <p>Use when EMD, closing date, or provisions need to change on the buyer side:</p>
+          <ul>
+            <li><strong>Double Close:</strong> Use the state-specific amendment template on DocuSign that matches the original B-C contract.</li>
+            <li><strong>Assignment:</strong> Use the Addendum to Assignment on DocuSign.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-docs" class="section">
+      <p class="docs-note">All Google documents require your company Google account to access.</p>
+      <div class="docs-grid" id="docs-grid"></div>
+    </div>
+
+    <div id="tab-qr" class="section">
+      <div class="qr-section-title">Core rules</div>
+      <div class="qr-card qr-danger">
+        <div class="qr-card-title"><i class="ti ti-alert-triangle"></i> Golden rule — A-B / B-C separation</div>
+        <p>A-B (seller ↔ CHO) and B-C (CHO ↔ buyer) conversations must NEVER cross. Never share seller info with a buyer or buyer info with a seller. You are the only bridge — and nothing crosses.</p>
+      </div>
+      <div class="qr-card qr-warning">
+        <div class="qr-card-title"><i class="ti ti-clock"></i> Cancellation deadlines — mandatory timezone check</div>
+        <p><strong>One day before DD expires</strong>, you must verify the exact cancellation deadline in the property's local timezone. This step is mandatory — do not skip.</p>
+        <ul>
+          <li>Read the contract carefully to find the exact cancellation deadline time</li>
+          <li>Open <a class="step-link" href="https://www.worldtimebuddy.com" target="_blank"><i class="ti ti-external-link"></i>World Time Buddy</a> — this is required, not optional. We operate across multiple timezones and so may you.</li>
+          <li>Add all the states below to your comparison and confirm the deadline against your own current timezone before sending any cancellation</li>
+        </ul>
+        <p style="margin-top:10px;font-weight:700;color:#7c3a1a">Always have these states loaded in World Time Buddy:</p>
+        <div class="tz-grid">
+          <div class="tz-chip"><strong>Georgia</strong>Eastern Time (ET)</div>
+          <div class="tz-chip"><strong>Florida</strong>Eastern Time (ET)</div>
+          <div class="tz-chip"><strong>Arizona</strong>Mountain Standard (no DST)</div>
+          <div class="tz-chip"><strong>California</strong>Pacific Time (PT)</div>
+          <div class="tz-chip"><strong>North Carolina</strong>Eastern Time (ET)</div>
+          <div class="tz-chip"><strong>South Carolina</strong>Eastern Time (ET)</div>
+          <div class="tz-chip"><strong>Texas</strong>Central Time (CT)</div>
+          <div class="tz-chip"><strong>Nevada</strong>Pacific Time (PT)</div>
+        </div>
+      </div>
+      <div class="qr-card qr-warning">
+        <div class="qr-card-title"><i class="ti ti-coins"></i> EMD refund tracking</div>
+        <p>Every time a deal is cancelled and an EMD was submitted, it must be tracked until the money is back. Check the <strong>Dead tab</strong> on the Transaction Tracker daily:</p>
+        <ul>
+          <li>Filter for deals with <strong>EMD toggled ON</strong> and <strong>Refund toggled OFF</strong></li>
+          <li>Follow up with escrow on each one until refund is received</li>
+          <li>Request refund receipt, save in Drive, mark confirmation column on Loan Master List</li>
+        </ul>
+      </div>
+      <div class="qr-section-title">Amendment quick reference</div>
+      <div class="qr-card">
+        <div class="qr-card-title"><i class="ti ti-pencil"></i> A-B Contract amendments</div>
+        <p>Use when EMD, closing date, due diligence, or provisions change on seller side:</p>
+        <ul>
+          <li><strong>Direct to Seller:</strong> Addendum to RPA — DocuSign signed template, seller signature only</li>
+          <li><strong>Realtor:</strong> State-specific amendment template on DocuSign</li>
+        </ul>
+      </div>
+      <div class="qr-card">
+        <div class="qr-card-title"><i class="ti ti-pencil"></i> B-C Contract amendments</div>
+        <p>Use when EMD, closing date, or provisions change on buyer side:</p>
+        <ul>
+          <li><strong>Double Close:</strong> State-specific amendment template on DocuSign</li>
+          <li><strong>Assignment:</strong> Addendum to Assignment on DocuSign</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const GMAIL="https://docs.google.com/document/d/10c-ROdHnMX5xLmG4_MywgU8Dq6F188-7unJMXa7D1rQ/edit?usp=sharing";
+const REVIEW="https://rickchoproject.github.io/contract-review/";
+const JOTFORM="https://form.jotform.com/250614943982060";
+const ASSIGNMENT="https://docs.google.com/document/d/1zcEjHbbGWHKsbJnPCSNgQ7MKcronRNsv/edit";
+const TIMEZONE="https://www.worldtimebuddy.com";
+const CLOSING_FOLDER="https://drive.google.com/drive/folders/1Y-d2h9lQkjV26Vz1tKGfyNMdw9LBxWva?usp=drive_link";
+const PNL="https://docs.google.com/spreadsheets/d/1iym8yKjxIX5dB9Y_aWNapyh4eVzy3JuQMuYlVGAvRLk/edit?usp=sharing";
+const TRACKER="https://docs.google.com/spreadsheets/d/1DRRyMPLyXaOOeHutAD9CBCPOcH_onAoUBzs9LRE_k_s/edit?usp=sharing";
+
+const docs=[
+  {title:"Additional terms",sub:"Required for all realtor contracts",icon:"ti-file-text",url:"https://docs.google.com/document/d/1FiEBGWP47CRcm7hQLwiKUqLX-oqflxwajokb0XAMKu0/edit?usp=sharing"},
+  {title:"Additional provisions",sub:"Add when needed",icon:"ti-file-plus",url:"https://docs.google.com/document/d/1njhWgUsEPDI3HcVvO04wHwrDzow9L1qF-3_ngeXXL9w/edit?usp=sharing"},
+  {title:"Title companies list",sub:"Approved title companies",icon:"ti-building-bank",url:"https://docs.google.com/document/d/1xF-Jc98sTCwbbdo5btTYCNW_cJIq3RitDupv8HDp1w0/edit?usp=sharing"},
+  {title:"Transaction tracker",sub:"Pipeline & deal tracking",icon:"ti-table",url:TRACKER},
+  {title:"Cancellation form",sub:"Direct to seller only",icon:"ti-file-x",url:"https://docs.google.com/document/d/1kb8YY_-SE2fgj5MiqJU7eWzBswEtH2v_/edit?usp=sharing"},
+  {title:"Extension addendum",sub:"Direct to seller — DocuSign template",icon:"ti-file-time",url:"https://docs.google.com/document/d/1eR41T_eCh5Xme-Ji3dgv9UhS3LsntajDIWtWDA6ICcI/edit?tab=t.0"},
+  {title:"Wiring instructions",sub:"All title companies",icon:"ti-cash",url:"https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link"},
+  {title:"P&L spreadsheet",sub:"Double close cost tracking",icon:"ti-chart-bar",url:PNL},
+  {title:"Closing statements folder",sub:"Final settlement statements",icon:"ti-folder",url:CLOSING_FOLDER},
+  {title:"Gmail templates",sub:"Open escrow, cancellation, send contract",icon:"ti-mail",url:GMAIL},
+  {title:"Contract review tool",sub:"AI contract scan",icon:"ti-brand-github",url:REVIEW},
+  {title:"JotForm",sub:"ACQ contract intake form",icon:"ti-forms",url:JOTFORM},
+  {title:"Assignment template",sub:"Buyer assignment contract",icon:"ti-writing",url:ASSIGNMENT},
+  {title:"World Time Buddy",sub:"Mandatory timezone comparison",icon:"ti-clock",url:TIMEZONE},
+];
+
+const stepsAB=[
+  {num:1,title:"Receive the contract",badge:"A-B",body:`<p>Two contract types:</p><div class="path-split"><div class="path-card"><div class="path-label ab">Direct to seller</div><ul><li>ACQ manager fills out <a class="step-link" href="${JOTFORM}" target="_blank"><i class="ti ti-external-link"></i>JotForm</a> to generate and send contract via their own DocuSign</li><li>TC receives fully executed copy</li><li>Use Drive version if edits are needed</li></ul></div><div class="path-card"><div class="path-label bc">Realtor contract</div><ul><li>Use state-specific DocuSign template</li><li>Agent sends to seller for signature, then we sign</li><li>Always attach Additional Terms</li></ul></div></div>`},
+  {num:2,title:"Review contract before signing (realtor only)",badge:"Important",badgeType:"warn",body:`<p>Upload to the <a class="step-link" href="${REVIEW}" target="_blank"><i class="ti ti-brand-github"></i>Contract Review tool</a> before anyone signs. It checks:</p><ul><li>Agreed purchase amount</li><li>Commissions and disclosures</li><li>Any abnormal terms</li></ul><div class="note"><p><i class="ti ti-alert-circle"></i> If the tool flags something, ask the ACQ manager if they agreed to it. If not — do NOT sign. Request a revision from the agent first.</p></div>`},
+  {num:3,title:"File in Google Drive",badge:"A-B",body:`<p>Once fully executed:</p><ul><li>Go to <strong>Drive → Transactions → [Current Year]</strong></li><li>Create a new folder named after the property address</li><li>Save the executed contract inside</li><li>Save any brokerage agreement in the same folder</li></ul>`},
+  {num:4,title:"Post to Active Transactions (Google Chat)",badge:"A-B",body:`<p>In the <strong>Active Transactions</strong> space:</p><ul><li>Create a new thread using the property address as the subject</li><li>Upload the executed contract and brokerage agreement</li><li>Tag the ACQ manager on the deal</li><li>Tag dispo team: <strong>Mark</strong> and <strong>Chris</strong></li></ul>`},
+  {num:5,title:"Log to Transaction Tracker",badge:"A-B",body:`<p><a class="step-link" href="${TRACKER}" target="_blank"><i class="ti ti-external-link"></i>Open Transaction Tracker</a></p><ul><li>Add a new line item for the property</li><li>Fill in all available fields</li></ul><p>This feeds the ACQ dashboard and is reviewed in weekly meetings.</p>`},
+  {num:6,title:"Open escrow (A-B side)",badge:"A-B",body:`<p>Do this immediately after logging to the tracker. Use the <a class="step-link" href="${GMAIL}" target="_blank"><i class="ti ti-mail"></i>Open Escrow A-B Gmail template</a></p><ul><li><strong>To:</strong> Escrow officer</li><li><strong>CC:</strong> Seller (direct to seller) or Agent (realtor) + Chris</li><li><strong>Attach:</strong> Executed purchase agreement + brokerage agreement (if any)</li></ul><p>The brokerage agreement impacts revenue and is needed at closing.</p>`},
+  {num:7,title:"Monitor inspection period",badge:"A-B",body:`<p>Track the due diligence end date in the tracker. <strong>One day before it expires</strong>, post in the Active Transactions thread asking the team whether they are extending or cancelling. Also use this time to verify the cancellation deadline and timezone — see the <strong>Quick Reference tab</strong>.</p>`},
+  {num:8,title:"Extension or cancellation",badge:"A-B",body:`<div class="path-split"><div class="path-card"><div class="path-label ab">If cancelling</div><ul><li><strong>Direct to seller:</strong> <a class="step-link" href="https://docs.google.com/document/d/1kb8YY_-SE2fgj5MiqJU7eWzBswEtH2v_/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>Cancellation form</a></li><li><strong>Realtor:</strong> state-specific DocuSign cancellation template</li></ul></div><div class="path-card"><div class="path-label bc">If extending</div><ul><li><strong>Direct to seller:</strong> Addendum to RPA — DocuSign signed template. Seller signature only.</li><li><strong>Realtor:</strong> state-specific DocuSign extension template</li></ul></div></div>
+  <div class="note">
+    <p><i class="ti ti-clock"></i> <strong>Mandatory — check deadline and timezone before cancelling:</strong> Read the contract for the exact cancellation time. Then open <a class="step-link" href="${TIMEZONE}" target="_blank"><i class="ti ti-external-link"></i>World Time Buddy</a> and confirm the deadline against your own timezone. We operate across multiple timezones — never assume. See the <strong>Quick Reference tab</strong> for the full list of states to have loaded.</p>
+    <p><i class="ti ti-coins"></i> <strong>If EMD was submitted on a cancellation:</strong> Follow up with escrow until refund is received. Request refund receipt. Mark the EMD refund confirmation column on the Loan Master List. Track via the <strong>Dead tab</strong> — EMD on, Refund off.</p>
+  </div>`},
+  {num:9,title:"EMD submitted to title company",badge:"A-B",body:`<p>Once the dispo team has enough buyer traction, they send EMD to the title company. See <a class="step-link" href="https://docs.google.com/document/d/1xF-Jc98sTCwbbdo5btTYCNW_cJIq3RitDupv8HDp1w0/edit?usp=sharing" target="_blank"><i class="ti ti-external-link"></i>Title Companies List</a>. Once Chris confirms:</p><ul><li>Mark EMD as paid in the Transaction Tracker</li></ul>`},
+];
+
+const stepsBC=[
+  {num:10,title:"Buyer found — draft assignment or double close",badge:"B-C",body:`<p>Dispo team provides buyer details. Two paths:</p><div class="path-split"><div class="path-card"><div class="path-label ab">Assignment</div><ul><li>Draft using the <a class="step-link" href="${ASSIGNMENT}" target="_blank"><i class="ti ti-external-link"></i>Assignment template</a></li><li>Buyer signs</li></ul></div><div class="path-card"><div class="path-label bc">Double close</div><ul><li>Use state-specific realtor DocuSign template — CHO appears as seller</li><li>No inspection period for buyer</li><li>EMD is non-refundable</li></ul></div></div>`},
+  {num:11,title:"Send contract + wiring instructions to buyer",badge:"B-C",body:`<p>Once buyer signs:</p><ul><li>Send signed contract via DocuSign</li><li>Attach wiring instructions — <a class="step-link" href="https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link" target="_blank"><i class="ti ti-external-link"></i>Wiring Instructions Folder</a></li></ul>`},
+  {num:12,title:"Save B-C docs & update tracker",badge:"B-C",body:`<ul><li>In the property's Drive folder, create a subfolder named <strong>"Dispo"</strong></li><li>Save all B-C documents inside the Dispo subfolder</li><li>Add buyer information to the property's line item in the Transaction Tracker</li></ul>`},
+  {num:13,title:"Open escrow (B-C side)",badge:"B-C",body:`<p>Use the <a class="step-link" href="${GMAIL}" target="_blank"><i class="ti ti-mail"></i>Open Escrow B-C Gmail template</a></p><ul><li><strong>To:</strong> Escrow officer + Buyer (or buyer's agent)</li><li><strong>CC:</strong> Chris</li><li><strong>Attach:</strong> Wiring instructions if buyer has not yet submitted EMD</li></ul><p>Then send a <strong>separate email to escrow only</strong> (remove buyer): ask them to share the EMD receipt as soon as it's received.</p>`},
+  {num:14,title:"Follow up on buyer EMD",badge:"B-C",body:`<ul><li>Follow up with escrow every <strong>3–5 business hours</strong> until received</li><li>Keep dispo specialist posted so they push the buyer</li><li>Once received: save receipt in Dispo folder, mark paid in tracker, inform Chris</li></ul>`},
+  {num:15,title:"Follow up through to closing",badge:"B-C",body:`<p>TC is the central facilitator. Maintain A-B / B-C separation at all times. As closing approaches:</p><ul><li>Confirm with escrow that both sides are coordinated to close</li><li>If there are blockers: involve <strong>ACQ</strong> for seller-side, <strong>Dispo</strong> for buyer-side</li></ul>`},
+  {num:16,title:"Title search & clearance",badge:"A-B",body:`<p>Follow up with escrow to confirm title search has started. Ask for a timeline — circle back in <strong>2–3 business days</strong>.</p><ul><li><strong>Clear title:</strong> coordinate with escrow for seller signatures</li><li><strong>Issues found</strong> (liens, restrictions, payoffs): loop in the ACQ manager — they communicate with seller/agent to resolve. TC provides info when asked but ACQ leads resolution.</li></ul>`},
+  {num:17,title:"Review settlement statement",badge:"Important",badgeType:"warn",body:`<p>Before parties sign, escrow sends the <strong>estimated</strong> settlement statement. Verify:</p><ul><li>Commissions are correct</li><li>Assignment fee is correct</li></ul>
+  <div class="note">
+    <p><i class="ti ti-file-dollar"></i> <strong>Save estimated settlement statements in the property's transaction folder in Drive.</strong> Copy the Drive file link and paste it on the P&L property tab under buy side / sell side as chips. These are temporary and will be replaced with finals after closing.</p>
+    <p><i class="ti ti-chart-bar"></i> <strong>Double close only — P&L tab setup:</strong><br>1. Open the <a class="step-link" href="${PNL}" target="_blank"><i class="ti ti-external-link"></i>P&L spreadsheet</a><br>2. Duplicate an existing tab<br>3. Rename it after the property address<br>4. Delete all data from the previous property<br>5. Input all costs from both A-B and B-C settlement statements</p>
+  </div>`},
+  {num:18,title:"Closing day",badge:"B-C",body:`<ul><li>Confirm all parties have signed</li><li>Confirm proceeds are out and the deal is funded</li><li>If title company doesn't have CHO wiring instructions — provide immediately from the <a class="step-link" href="https://drive.google.com/drive/folders/1dRRR7jPQ6S_X0eQ4sImY_YbI_f3ue1F8?usp=drive_link" target="_blank"><i class="ti ti-external-link"></i>Wiring Instructions Folder</a></li></ul>
+  <div class="note">
+    <p><i class="ti ti-file-check"></i> <strong>Get final executed settlement statements from escrow.</strong> Then:</p>
+    <p>1. Go to <a class="step-link" href="${CLOSING_FOLDER}" target="_blank"><i class="ti ti-folder"></i>Closing Statements folder</a> → open the current year folder → create a <strong>new folder named after the property address</strong><br>2. Upload the final A-B and B-C settlement statements there<br>3. Copy the Drive file links<br>4. Paste them on the P&L property tab under <strong>buy side / sell side</strong> as chips, replacing the estimated ones</p>
+    <p><i class="ti ti-confetti"></i> Announce to the team in Active Transactions that the deal has closed 🎉</p>
+  </div>`},
+];
+
+function buildSteps(steps,id){const el=document.getElementById(id);steps.forEach(s=>{const bt=s.badgeType||(s.badge==='A-B'?'ab':s.badge==='B-C'?'bc':'warn');el.innerHTML+=`<div class="step"><div class="step-header" onclick="toggleStep(this)"><div class="step-num">${s.num}</div><div class="step-title">${s.title}</div><span class="step-badge badge-${bt}">${s.badge}</span><i class="ti ti-chevron-down step-chevron"></i></div><div class="step-body">${s.body}</div></div>`;});}
+function buildDocs(){const el=document.getElementById('docs-grid');docs.forEach(d=>{if(d.url){el.innerHTML+=`<a class="doc-card" href="${d.url}" target="_blank"><i class="ti ${d.icon} doc-icon"></i><div class="doc-card-text"><div class="doc-card-title">${d.title}</div><div class="doc-card-sub">${d.sub}</div></div><i class="ti ti-external-link ext-icon"></i></a>`;}else{el.innerHTML+=`<div class="doc-card" style="opacity:0.4;cursor:default"><i class="ti ${d.icon} doc-icon"></i><div class="doc-card-text"><div class="doc-card-title">${d.title}</div><div class="doc-card-sub">Link to be added</div></div><i class="ti ti-clock ext-icon"></i></div>`;}});}
+function toggleStep(h){const b=h.nextElementSibling,c=h.querySelector('.step-chevron'),o=b.classList.contains('open');b.classList.toggle('open',!o);c.classList.toggle('open',!o);}
+function toggleAmendment(h){const b=h.nextElementSibling,c=h.querySelector('.amendment-chevron'),o=b.classList.contains('open');b.classList.toggle('open',!o);c.classList.toggle('open',!o);}
+function showTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));['workflow','docs','qr'].forEach((n,i)=>{if(n===name){document.querySelectorAll('.tab')[i].classList.add('active');document.getElementById('tab-'+n).classList.add('active');}});}
+buildSteps(stepsAB,'steps-ab');
+buildSteps(stepsBC,'steps-bc');
+buildDocs();
+</script>
+</body>
+</html>
